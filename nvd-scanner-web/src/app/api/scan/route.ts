@@ -53,7 +53,7 @@ export async function POST(req: Request) {
     }
 
     // 2. Query NVD for each technology
-    let allVulns: any[] = [];
+    const allVulns: { id: string, description: string, score: number }[] = [];
     const nvdHeaders: Record<string, string> = {};
     if (NVD_API_KEY && NVD_API_KEY !== "your_api_key_here") {
       nvdHeaders["apiKey"] = NVD_API_KEY;
@@ -69,7 +69,8 @@ export async function POST(req: Request) {
         });
 
         const cves = nvdRes.data.vulnerabilities || [];
-        cves.forEach((v: any) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        cves.forEach((v: { cve: any }) => {
           const cve = v.cve;
           // Extract CVSS V3 score if available, otherwise V2
           let cvssScore = 0;
@@ -85,8 +86,8 @@ export async function POST(req: Request) {
             });
           }
         });
-      } catch (err: any) {
-        console.error(`Failed to fetch CVEs for ${tech}:`, err.message);
+      } catch (err) {
+        console.error(`Failed to fetch CVEs for ${tech}:`, err instanceof Error ? err.message : String(err));
         // Continue scanning other techs even if one fails (NVD rate limits are strict)
       }
     }
@@ -117,7 +118,7 @@ export async function POST(req: Request) {
       vulnerabilities: sortedVulns
     });
 
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'An error occurred during the scan' }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json({ error: error instanceof Error ? error.message : 'An error occurred during the scan' }, { status: 500 });
   }
 }
