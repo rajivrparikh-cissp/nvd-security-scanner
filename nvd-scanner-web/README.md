@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NVD Security Scanner
 
-## Getting Started
+A free, production-grade web application that scans any website's technology stack against the [NIST National Vulnerability Database (NVD)](https://nvd.nist.gov/) to identify CVEs and calculate a security grade.
 
-First, run the development server:
+🌐 **Live:** https://nvd-scanner-web-135378541186.australia-southeast1.run.app
+
+---
+
+## Features
+
+- 🔍 **URL Scanner** — Detects web server, CMS, and framework technologies via HTTP headers
+- 🛡️ **CVE Cross-Reference** — Queries NVD API for known vulnerabilities per detected technology
+- 📊 **Security Grade** — Assigns A–F grade based on CVE severity scores
+- 🔥 **Live Trending Feed** — Displays latest high-severity CVEs from NVD in real time
+- 📢 **Google AdSense** — Monetised with responsive ad units
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Frontend | Next.js 16 (React 19, TypeScript) |
+| Styling | Tailwind CSS v4 |
+| Backend | Next.js API Routes |
+| CVE Data | NIST NVD REST API v2 |
+| Hosting | Google Cloud Run (australia-southeast1) |
+| CI/CD | GitHub → Cloud Build → Cloud Run |
+| Container | Docker (node:20-alpine, multi-stage) |
+
+---
+
+## Local Development
 
 ```bash
+cd nvd-scanner-web
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Deployment
 
-## Learn More
+Every push to `main` automatically triggers a Cloud Build → Cloud Run deploy via the connected repository trigger.
 
-To learn more about Next.js, take a look at the following resources:
+To manually build and deploy:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+# Build and push image
+gcloud builds submit --tag gcr.io/passiveincome01/nvd-scanner-web:latest --project passiveincome01
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Deploy to Cloud Run
+gcloud run deploy nvd-scanner-web \
+  --image gcr.io/passiveincome01/nvd-scanner-web:latest \
+  --platform managed \
+  --region australia-southeast1 \
+  --allow-unauthenticated \
+  --project passiveincome01
+```
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Project Structure
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+nvd-scanner-web/
+├── src/app/
+│   ├── page.tsx          # Main scanner UI + AdSense units
+│   ├── layout.tsx        # Root layout + AdSense script tags
+│   ├── globals.css       # Global styles
+│   └── api/
+│       ├── scan/         # POST /api/scan — tech detection + CVE lookup
+│       └── trending/     # GET /api/trending — latest NVD CVEs
+├── Dockerfile            # Multi-stage production build
+├── cloudbuild.yaml       # CI/CD pipeline config
+└── next.config.ts        # Security headers + CSP
+```
+
+---
+
+Built by [Rajiv Parikh](https://github.com/rajivrparikh-cissp) — 25+ years in enterprise IT security.
