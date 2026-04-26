@@ -1,5 +1,5 @@
 steps:
-  # Step 1: Build the Docker image
+  # Step 1: Build the Docker image from the nvd-scanner-web subdirectory
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
@@ -7,16 +7,19 @@ steps:
       - 'gcr.io/$PROJECT_ID/nvd-scanner-web:$COMMIT_SHA'
       - '-t'
       - 'gcr.io/$PROJECT_ID/nvd-scanner-web:latest'
-      - '.'
+      - '-f'
+      - 'nvd-scanner-web/Dockerfile'
+      - 'nvd-scanner-web'
 
-  # Step 2: Push both tags to Container Registry
+  # Step 2: Push commit SHA tag
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/nvd-scanner-web:$COMMIT_SHA']
 
+  # Step 3: Push latest tag
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/nvd-scanner-web:latest']
 
-  # Step 3: Deploy to Cloud Run
+  # Step 4: Deploy to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
