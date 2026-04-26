@@ -2,6 +2,28 @@
 
 import { useState, useEffect } from 'react';
 
+// TypeScript declarations for AMP custom elements
+declare namespace JSX {
+  interface IntrinsicElements {
+    'amp-ad': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement> & {
+      width?: string;
+      height?: string | number;
+      type?: string;
+      'data-ad-client'?: string;
+      'data-ad-slot'?: string;
+      'data-auto-format'?: string;
+      'data-full-width'?: string;
+    }, HTMLElement>;
+  }
+}
+
+// Extend div to accept overflow attribute used by amp-ad
+declare module 'react' {
+  interface HTMLAttributes<T> {
+    overflow?: string;
+  }
+}
+
 type Vulnerability = {
   id: string;
   description: string;
@@ -20,6 +42,44 @@ type TrendingCVE = {
   severity: string;
   description: string;
 };
+
+// ---------------------------------------------------------------------------
+// Standard AdSense unit — works on all pages (no AMP runtime required).
+// Each instance calls adsbygoogle.push() independently after mount.
+// ---------------------------------------------------------------------------
+function AdUnit({ slot }: { slot: string }) {
+  useEffect(() => {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
+    } catch (e) {
+      console.error('AdSense push error:', e);
+    }
+  }, []);
+
+  return (
+    <div
+      style={{
+        width: '100%',
+        maxWidth: '900px',
+        marginInline: 'auto',
+        marginTop: '2.5rem',
+        overflow: 'hidden',
+        minHeight: '90px',
+      }}
+    >
+      {/* @ts-ignore — data-ad-* attributes are valid AdSense props */}
+      <ins
+        className="adsbygoogle"
+        style={{ display: 'block' }}
+        data-ad-client="ca-pub-6560924171188758"
+        data-ad-slot={slot}
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+      />
+    </div>
+  );
+}
 
 export default function Home() {
   const [url, setUrl] = useState('');
@@ -176,6 +236,9 @@ export default function Home() {
         )}
       </div>
 
+      {/* ── Ad Unit 1: between scanner results and trending feed ── */}
+      <AdUnit slot="1952159349" />
+
       {/* Dynamic Trending CVEs Section */}
       <div className="trending-section" style={{ marginTop: '4rem', maxWidth: '900px', width: '100%', marginInline: 'auto' }}>
         <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem', color: 'var(--text-bright)', textAlign: 'center' }}>🔥 Trending Vulnerabilities (Live Feed)</h2>
@@ -199,6 +262,9 @@ export default function Home() {
           </ul>
         </div>
       </div>
+
+      {/* ── Ad Unit 2: after trending feed, before footer ── */}
+      <AdUnit slot="1952159349" />
 
       <footer style={{ marginTop: '5rem', padding: '2rem 0', borderTop: '1px solid rgba(255,255,255,0.05)', width: '100%', textAlign: 'center' }}>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>

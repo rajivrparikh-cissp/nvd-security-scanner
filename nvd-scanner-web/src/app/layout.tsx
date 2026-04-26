@@ -28,10 +28,16 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>
-        <script 
-          async 
+        <script
+          async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6560924171188758"
           crossOrigin="anonymous"
+        ></script>
+        {/* AMP Ad library — required for amp-ad custom element */}
+        <script
+          async
+          custom-element="amp-ad"
+          src="https://cdn.ampproject.org/v0/amp-ad-0.1.js"
         ></script>
       </head>
       <body className="min-h-full flex flex-col">{children}</body>
