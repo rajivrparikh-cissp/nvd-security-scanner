@@ -31,7 +31,7 @@ steps:
       - '--platform'
       - 'managed'
       - '--region'
-      - 'australia-southeast1'
+      - 'us-central1'
       - '--allow-unauthenticated'
       - '--project'
       - '$PROJECT_ID'

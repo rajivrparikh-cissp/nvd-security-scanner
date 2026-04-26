@@ -2,7 +2,7 @@
 
 A free, production-grade web application that scans any website's technology stack against the [NIST National Vulnerability Database (NVD)](https://nvd.nist.gov/) to identify CVEs and calculate a security grade.
 
-🌐 **Live:** https://nvd-scanner-web-135378541186.australia-southeast1.run.app
+🌐 **Live:** https://nvd-scanner-web-135378541186.us-central1.run.app
 
 ---
 
@@ -24,7 +24,7 @@ A free, production-grade web application that scans any website's technology sta
 | Styling | Tailwind CSS v4 |
 | Backend | Next.js API Routes |
 | CVE Data | NIST NVD REST API v2 |
-| Hosting | Google Cloud Run (australia-southeast1) |
+| Hosting | Google Cloud Run (us-central1) |
 | CI/CD | GitHub → Cloud Build → Cloud Run |
 | Container | Docker (node:20-alpine, multi-stage) |
 
@@ -56,7 +56,7 @@ gcloud builds submit --tag gcr.io/passiveincome01/nvd-scanner-web:latest --proje
 gcloud run deploy nvd-scanner-web \
   --image gcr.io/passiveincome01/nvd-scanner-web:latest \
   --platform managed \
-  --region australia-southeast1 \
+  --region us-central1 \
   --allow-unauthenticated \
   --project passiveincome01
 ```
